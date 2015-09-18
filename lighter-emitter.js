@@ -14,6 +14,7 @@
 
 var Type = require('lighter-type')
 var Emitter = module.exports = Type.extend({
+
   /**
    * Set the maximum number of listeners that can listen to any type of event.
    */
@@ -134,11 +135,15 @@ var Emitter = module.exports = Type.extend({
       if (listeners === fn) {
         delete events[type]
         self.emit('removeListener', type, fn)
-      } else if (typeof listeners === Array) {
-        for (var i = 0, l = listeners.length; i < l; i++) {
+      } else if (listeners instanceof Array) {
+        for (var i = listeners.length - 1; i >= 0; i--) {
           if (listeners[i] === fn) {
             listeners.splice(i, 1)
-            return self.emit('removeListener', type, fn)
+            self.emit('removeListener', type, fn)
+          }
+          if (listeners.length === 1) {
+            listeners = listeners[0]
+            return self
           }
         }
       }

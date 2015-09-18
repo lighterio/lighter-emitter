@@ -1,5 +1,5 @@
 var fs = require('fs')
-var emitter = require(__dirname + '/lighter-emitter')
+var emitter = require('../lighter-emitter')
 
 describe('Benchmarks', function () {
 
