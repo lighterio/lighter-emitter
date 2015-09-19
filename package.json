@@ -16,7 +16,7 @@
   ],
   "main": "lighter-emitter.js",
   "engines": {
-    "node": ">=0.2.6"
+    "node": ">=0.8.25"
   },
   "scripts": {
     "test": "./node_modules/exam/exam.js",
