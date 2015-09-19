@@ -16,10 +16,9 @@ var Type = require('lighter-type')
 var Emitter = module.exports = Type.extend({
 
   /**
-   * Create a new event emitter.
+   * Empty constructor (for speed).
    */
-  init: function () {
-  },
+  init: function () {},
 
   /**
    * Set the maximum number of listeners that can listen to any type of event.
