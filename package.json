@@ -6,7 +6,7 @@
     "lighter-type": ">=0.0.2"
   },
   "devDependencies": {
-    "exam": ">=0.3.7"
+    "exam": ">=0.3.8"
   },
   "keywords": [
     "lighter",
@@ -16,7 +16,7 @@
   ],
   "main": "lighter-emitter.js",
   "engines": {
-    "node": ">=0.8.25"
+    "node": ">=0.8.28"
   },
   "scripts": {
     "test": "./node_modules/exam/exam.js",
