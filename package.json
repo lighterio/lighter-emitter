@@ -6,7 +6,7 @@
     "lighter-type": ">=0.0.2"
   },
   "devDependencies": {
-    "exam": ">=0.3.5"
+    "exam": ">=0.3.7"
   },
   "keywords": [
     "lighter",
