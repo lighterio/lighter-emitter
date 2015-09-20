@@ -1,11 +1,9 @@
 # `lighter-emitter`
-[![NPM Version](https://img.shields.io/npm/v/lighter-emitter.svg)](https://npmjs.org/package/lighter-emitter)
+[![Version](https://img.shields.io/npm/v/lighter-emitter.svg)](https://npmjs.org/package/lighter-emitter)
 [![Downloads](https://img.shields.io/npm/dm/lighter-emitter.svg)](https://npmjs.org/package/lighter-emitter)
-[![Build Status](https://img.shields.io/travis/lighterio/lighter-emitter.svg)](https://travis-ci.org/lighterio/lighter-emitter)
-[![Code Coverage](https://img.shields.io/coveralls/lighterio/lighter-emitter/master.svg)](https://coveralls.io/r/lighterio/lighter-emitter)
-[![Dependencies](https://img.shields.io/david/lighterio/lighter-emitter.svg)](https://david-dm.org/lighterio/lighter-emitter)
-[![Standard Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
-[![Support](https://img.shields.io/gratipay/Lighter.io.svg)](https://gratipay.com/Lighter.io/)
+[![Build](https://img.shields.io/travis/lighterio/lighter-emitter.svg)](https://travis-ci.org/lighterio/lighter-emitter)
+[![Coverage](https://img.shields.io/coveralls/lighterio/lighter-emitter/master.svg)](https://coveralls.io/r/lighterio/lighter-emitter)
+[![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
 
 The `lighter-emitter` module is a lightweight event emitter.
 
@@ -34,32 +32,9 @@ We would like to thank all of the amazing people who use, support,
 promote, enhance, document, patch, and submit comments & issues -
 `lighter-emitter` couldn't exist without you.
 
-Additionally, huge thanks go to [Goin’](https://goin.io) for employing
+Additionally, huge thanks go to [eBay](http://www.ebay.com) for employing
 and supporting [`lighter-emitter`](http://lighter.io/lighter-emitter) project
 maintainers, and for being an epically awesome place to work (and play).
-
-
-## MIT License
-
-Copyright (c) 2014 Sam Eubank
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
 
 ## How to Contribute

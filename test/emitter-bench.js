@@ -2,8 +2,6 @@ var Emitter = require('../lighter-emitter')
 var EventEmitter = require('events').EventEmitter
 
 bench('Instantiation', function () {
-  this.sampleSize = 1e3
-  this.minimumSamples = 1e3
 
   it('lighter-emitter', function () {
     new Emitter()
@@ -16,8 +14,6 @@ bench('Instantiation', function () {
 })
 
 bench('Listening', function () {
-  this.sampleSize = 1e3
-  this.minimumSamples = 1e3
 
   var e = new Emitter()
   e.setMaxListeners(Infinity)
@@ -35,29 +31,82 @@ bench('Listening', function () {
 
 })
 
-bench('Emitting', function () {
-  this.sampleSize = 1e4
-  this.minimumSamples = 1e3
+describe('Emitting', function () {
 
-  var e = new Emitter()
-  e.on('a', function () {})
+  bench('zero values', function () {
 
-  var ee = new EventEmitter()
-  ee.on('a', function () {})
+    var e = new Emitter()
+    e.on('a', function () {})
 
-  it('lighter-emitter', function () {
-    e.emit('a', 1)
+    var ee = new EventEmitter()
+    ee.on('a', function () {})
+
+    it('lighter-emitter', function () {
+      e.emit('a')
+    })
+
+    it('events.EventEmitter', function () {
+      ee.emit('a')
+    })
+
   })
 
-  it('events.EventEmitter', function () {
-    ee.emit('a', 1)
+  bench('one value', function () {
+
+    var e = new Emitter()
+    e.on('a', function () {})
+
+    var ee = new EventEmitter()
+    ee.on('a', function () {})
+
+    it('lighter-emitter', function () {
+      e.emit('a', 1)
+    })
+
+    it('events.EventEmitter', function () {
+      ee.emit('a', 1)
+    })
+
   })
 
+  bench('two values', function () {
+
+    var e = new Emitter()
+    e.on('a', function () {})
+
+    var ee = new EventEmitter()
+    ee.on('a', function () {})
+
+    it('lighter-emitter', function () {
+      e.emit('a', 1, 2)
+    })
+
+    it('events.EventEmitter', function () {
+      ee.emit('a', 1, 2)
+    })
+
+  })
+
+  bench('three values', function () {
+
+    var e = new Emitter()
+    e.on('a', function () {})
+
+    var ee = new EventEmitter()
+    ee.on('a', function () {})
+
+    it('lighter-emitter', function () {
+      e.emit('a', 1, 2, 3)
+    })
+
+    it('events.EventEmitter', function () {
+      ee.emit('a', 1, 2, 3)
+    })
+
+  })
 })
 
-bench('Listening Once', function () {
-  this.sampleSize = 1e3
-  this.minimumSamples = 1e3
+bench('Listening once', function () {
 
   var e = new Emitter()
   var ee = new EventEmitter()

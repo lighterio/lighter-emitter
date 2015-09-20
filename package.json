@@ -8,11 +8,26 @@
   "devDependencies": {
     "exam": ">=0.3.8"
   },
+  "bundledDependencies": [
+    "lighter-type"
+  ],
   "keywords": [
+    "event",
+    "emitter",
+    "object",
+    "pattern",
+    "on",
+    "emit",
+    "once",
+    "listeners",
+    "events",
     "lighter",
     "fast",
     "lightweight",
-    "minimal"
+    "minimal",
+    "benchmark",
+    "speed",
+    "ops"
   ],
   "main": "lighter-emitter.js",
   "engines": {
@@ -31,5 +46,5 @@
   "contributors": [
     "Sam Eubank <sameubank@gmail.com>"
   ],
-  "license": "MIT"
+  "license": "ISC"
 }
