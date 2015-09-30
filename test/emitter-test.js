@@ -1,12 +1,12 @@
-var Emitter = require('../lighter-emitter')
+var Emitter = require('../lighter-emitter').setMaxArguments(1)
 var is = global.is || require('exam/lib/is')
-var doNothing = function () {}
+var no = function () {}
 
 describe('Emitter', function () {
 
   it('has all expected methods', function () {
     var o = {}
-    Emitter.decorate(o, Emitter.prototype)
+    Emitter.init(o)
     is.function(o.on)
     is.function(o.once)
     is.function(o.emit)
@@ -17,13 +17,13 @@ describe('Emitter', function () {
 
   describe('.prototype.on', function () {
 
-    it('adds a single listener', function (done) {
+    it('adds a listener', function (done) {
       var o = new Emitter()
       o.on('e', done)
       o.emit('e')
     })
 
-    it('adds 2 listeners', function (done) {
+    it('adds two listeners', function () {
       var o = new Emitter()
       var f = function (d) { o.c += 'f' + d; }
       var g = function (d) { o.c += 'g' + d; }
@@ -32,12 +32,11 @@ describe('Emitter', function () {
       o.on('e', g)
       o.emit('e', 1)
       is(o.c, 'f1g1')
-      done()
     })
 
-    it('adds 3 listeners', function (done) {
+    it('adds three listeners', function () {
       var o = {c: ''}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function (d) { o.c += 'f' + d; }
       var g = function (d) { o.c += 'g' + d; }
       var h = function (d) { o.c += 'h' + d; }
@@ -46,14 +45,13 @@ describe('Emitter', function () {
       o.on('e', h)
       o.emit('e')
       is(o.c, 'fundefinedgundefinedhundefined')
-      done()
     })
 
   })
 
   describe('.prototype.once', function () {
 
-    it('only fires once', function (done) {
+    it('only fires once', function () {
       var o = new Emitter()
       o.c = ''
       var f = function (d) { o.c += 'f' + d; }
@@ -62,7 +60,6 @@ describe('Emitter', function () {
       is(o.c, 'f1')
       o.emit('e', 2)
       is(o.c, 'f1')
-      done()
     })
 
   })
@@ -70,9 +67,10 @@ describe('Emitter', function () {
   describe('.prototype.emit', function () {
 
     it('emits data arguments', function () {
+      Emitter.setMaxArguments(4)
       var o = {c: ''}
-      Emitter.decorate(o, Emitter.prototype)
-      var f = function () {
+      Emitter.init(o)
+      var f = function (a, b, c, d) {
         var a = Array.prototype.slice.call(arguments)
         o.c += '[' + a.join(',') + ']'
       }
@@ -81,17 +79,20 @@ describe('Emitter', function () {
       o.emit('c', 1)
       o.emit('c', 1, 2)
       o.emit('c', 1, 2, 3)
-      is(o.c, '[][1][1,2][1,2,3]')
+      o.emit('c', 1, 2, 3, 4)
+      is(o.c, '[][1][1,2][1,2,3][1,2,3,4]')
+      Emitter.setMaxArguments(1)
     })
 
     it('emits data arguments to multiple listeners', function () {
+      Emitter.setMaxArguments(4)
       var o = {c: '', d: 0}
-      Emitter.decorate(o, Emitter.prototype)
-      var f = function () {
+      Emitter.init(o)
+      var f = function (a, b, c, d) {
         var a = Array.prototype.slice.call(arguments)
         o.c += '[' + a.join(',') + ']'
       }
-      var g = function () {
+      var g = function (a, b, c, d) {
         var a = Array.prototype.slice.call(arguments)
         a.forEach(function (n) {
           if (n) {
@@ -105,8 +106,48 @@ describe('Emitter', function () {
       o.emit('c', 1)
       o.emit('c', 1, 2)
       o.emit('c', 1, 2, 3)
-      is(o.c, '[][1][1,2][1,2,3]')
-      is(o.d, 10)
+      o.emit('c', 1, 2, 3, 4)
+      is(o.c, '[][1][1,2][1,2,3][1,2,3,4]')
+      is(o.d, 20)
+      Emitter.setMaxArguments(1)
+    })
+
+    it('emits data arguments to any number of listeners', function () {
+      Emitter.setMaxArguments(2)
+      var o = {n: 0}
+      Emitter.init(o)
+      var f = function (a, b) {
+        o.n += a + b
+      }
+      is(o.n, 0)
+      o.on('c', f)
+      o.emit('c', 1, 2)
+      is(o.n, 3)
+      o.on('c', f)
+      o.emit('c', 1, 2)
+      is(o.n, 9)
+      o.removeAllListeners()
+      o.emit('c', 2, 3)
+      is(o.n, 9)
+      Emitter.setMaxArguments(1)
+    })
+
+    it('can ignore arguments beyond a maximum', function () {
+      var o = {n: 0}
+      Emitter.init(o)
+      o.setMaxArguments(1)
+      var f = function (a, b) {
+        o.n += (a + b)
+      }
+      is(o.n, 0)
+      o.on('c', f)
+      o.emit('c', 1, 2)
+      is.nan(o.n)
+      o.emit('c', '1')
+      is(o.n, 'NaN1undefined')
+      o.setMaxArguments(2)
+      o.emit('c', 1, 2)
+      is(o.n, 'NaN1undefined3')
     })
 
   })
@@ -120,21 +161,49 @@ describe('Emitter', function () {
 
     it('returns an empty array if there are no listeners for that event type', function () {
       var o = new Emitter()
-      o.on('a', function () {})
+      o.on('a', no)
       is.same(o.listeners('b'), [])
     })
 
     it('returns a singleton array if there is one matching listener', function () {
       var o = new Emitter()
-      o.on('a', function () {})
-      is.same(o.listeners('a'), [function () {}])
+      o.on('a', no)
+      is.same(o.listeners('a'), [no])
     })
 
     it('returns an array if there are many matching listeners', function () {
       var o = new Emitter()
-      o.on('a', function () {})
-      o.on('a', function () {})
-      is.same(o.listeners('a'), [function () {}, function () {}])
+      o.on('a', no)
+      o.on('a', no)
+      is.same(o.listeners('a'), [no, no])
+    })
+
+  })
+
+  describe('.prototype.listenerCount', function () {
+
+    it('returns zero if there are no listeners', function () {
+      var o = new Emitter()
+      is.same(o.listenerCount(), 0)
+    })
+
+    it('returns zero if there are no listeners for that event type', function () {
+      var o = new Emitter()
+      o.on('a', no)
+      is.same(o.listenerCount('b'), 0)
+    })
+
+    it('returns one if there is one matching listener', function () {
+      var o = new Emitter()
+      o.on('a', no)
+      is.same(o.listenerCount('a'), 1)
+    })
+
+    it('returns the number of matching listeners if there are many', function () {
+      var o = new Emitter()
+      o.on('a', no)
+      o.on('a', no)
+      is.same(o.listenerCount('a'), 2)
     })
 
   })
@@ -143,7 +212,7 @@ describe('Emitter', function () {
 
     it('removes a listener', function () {
       var o = {n: 0}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         this.n += 1
       }
@@ -164,8 +233,7 @@ describe('Emitter', function () {
 
     it('is OK if there are no listeners', function () {
       var o = new Emitter()
-      var f = function () {}
-      o.removeListener('something', f)
+      o.removeListener('something', no)
     })
 
     it('is OK if listeners are corrupt', function () {
@@ -180,7 +248,7 @@ describe('Emitter', function () {
 
     it('removes all listeners of a type', function () {
       var o = {n: 0}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         this.n += 1
       }
@@ -203,7 +271,7 @@ describe('Emitter', function () {
 
     it('removes all listeners, period', function () {
       var o = {n: 0}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         this.n += 1
       }
@@ -223,7 +291,7 @@ describe('Emitter', function () {
 
     it('is OK having no matching listeners', function () {
       var o = {n: 0}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         this.n += 1
       }
@@ -236,7 +304,7 @@ describe('Emitter', function () {
 
     it('fires an event once', function () {
       var o = {c: ''}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         var a = Array.prototype.slice.call(arguments)
         o.c += '[' + a.join(',') + ']'
@@ -252,16 +320,37 @@ describe('Emitter', function () {
 
   describe('.defaultMaxListeners', function () {
 
-    it('is 10', function (done) {
-      var o = new Emitter()
-      for (var i = 0; i < 10; i++) {
-        o.on('a', function () {})
-      }
-      try {
-        o.on('a', function () {})
-      } catch (e) {
-        done()
-      }
+    it('treats 0 as unlimited', function () {
+      var original = Emitter.defaultMaxListeners
+      Emitter.defaultMaxListeners = 0
+      is(Emitter.defaultMaxListeners, Infinity)
+      Emitter.defaultMaxListeners = original
+    })
+
+    it('treats 100 as 100', function () {
+      var original = Emitter.defaultMaxListeners
+      Emitter.defaultMaxListeners = 100
+      is(Emitter.defaultMaxListeners, 100)
+      Emitter.defaultMaxListeners = original
+    })
+
+    describe('default 10', function () {
+
+      it('is returned', function () {
+        is(Emitter.defaultMaxListeners, 10)
+      })
+
+      it('is inherited by instances', function (done) {
+        var o = new Emitter()
+        for (var i = 0; i < 10; i++) {
+          o.on('a', no)
+        }
+        try {
+          o.on('a', no)
+        } catch (e) {
+          done()
+        }
+      })
     })
 
   })
@@ -273,16 +362,16 @@ describe('Emitter', function () {
       o.setMaxListeners(0)
       is(o._maxListeners, Infinity)
       for (var i = 0; i < 1e4; i++) {
-        o.on('a', doNothing)
+        o.on('a', no)
       }
     })
 
     it('works with 1', function (done) {
       var o = new Emitter()
       o.setMaxListeners(1)
-      o.on('a', doNothing)
+      o.on('a', no)
       try {
-        o.on('a', doNothing)
+        o.on('a', no)
       } catch (e) {
         done()
       }
@@ -291,10 +380,10 @@ describe('Emitter', function () {
     it('works with > 1', function (done) {
       var o = new Emitter()
       o.setMaxListeners(2)
-      o.on('a', doNothing)
-      o.on('a', doNothing)
+      o.on('a', no)
+      o.on('a', no)
       try {
-        o.on('a', doNothing)
+        o.on('a', no)
       } catch (e) {
         done()
       }
@@ -306,7 +395,7 @@ describe('Emitter', function () {
 
     it('sets a listener', function () {
       var o = {n: 0}
-      Emitter.decorate(o, Emitter.prototype)
+      Emitter.init(o)
       var f = function () {
         o.n++
       }

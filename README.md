@@ -1,11 +1,13 @@
-# `lighter-emitter`
-[![Version](https://img.shields.io/npm/v/lighter-emitter.svg)](https://npmjs.org/package/lighter-emitter)
-[![Downloads](https://img.shields.io/npm/dm/lighter-emitter.svg)](https://npmjs.org/package/lighter-emitter)
-[![Build](https://img.shields.io/travis/lighterio/lighter-emitter.svg)](https://travis-ci.org/lighterio/lighter-emitter)
-[![Coverage](https://img.shields.io/coveralls/lighterio/lighter-emitter/master.svg)](https://coveralls.io/r/lighterio/lighter-emitter)
-[![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](https://github.com/feross/standard)
+# lighter-emitter
+[![Chat](https://badges.gitter.im/chat.svg)](//gitter.im/lighterio/public)
+[![Version](https://img.shields.io/npm/v/lighter-emitter.svg)](//www.npmjs.com/package/lighter-emitter)
+[![Downloads](https://img.shields.io/npm/dm/lighter-emitter.svg)](//www.npmjs.com/package/lighter-emitter)
+[![Build](https://img.shields.io/travis/lighterio/lighter-emitter.svg)](//travis-ci.org/lighterio/lighter-emitter)
+[![Coverage](https://img.shields.io/coveralls/lighterio/lighter-emitter/master.svg)](//coveralls.io/r/lighterio/lighter-emitter)
+[![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](//github.com/feross/standard)
 
-The `lighter-emitter` module is a lightweight event emitter.
+The `lighter-emitter` module is a lightweight event emitter with
+better performance than Node's builtin EventEmitter.
 
 
 ## Installation
@@ -16,14 +18,75 @@ npm install --save lighter-emitter
 ```
 
 
+## Extreme Performance
+
+A typical Node application instantiates several EventEmitter objects
+for every request, so EventEmitter performance is closely tied to
+application performance. Node's builtin EventEmitter is very fast, but
+`lighter-emitter` is slightly faster, according to
+[our benchmarks](//github.com/lighterio/lighter-emitter/master/test/bench/emitter-bench.js):
+
+<img src="https://raw.githubusercontent.com/lighterio/lighter-emitter/master/test/bench/run.png" width="450" height="290">
+
+
 ## API
 
-For now, please see the [source](https://github.com/lighterio/lighter-emitter/blob/master/lighter-emitter.js).
+### Type
+
+The `lighter-emitter` module exports a
+[`lighter-type`](//www.npmjs.com/package/lighter-type) Type which can
+instantiate new Emitter objects or decorate existing objects with Emitter
+prototype methods.
+
+#### Constructor
+
+A new emitter object can be constructed simply with the `new` keyword.
+
+```javascript
+var Emitter = require('lighter-emitter')
+
+// Create a brand new Emitter object.
+var emitter = new Emitter()
+```
+
+#### Emitter.decorate(object, properties)
+
+A plain JavaScript object effectively becomes an emitter if you decorate
+it with the Emitter prototype. However, it does not become an instance of
+Emitter.
+
+```javascript
+var Emitter = require('lighter-emitter')
+
+var object = {}
+Emitter.decorate(object, Emitter.prototype)
+
+object.on('hi', function (message) {
+  console.log('Hi! ' + message + '.')
+})
+
+if (object instanceof Emitter) {
+  object.emit('hi', 'I am an emitter')
+} else {
+  object.emit('hi', 'I behave like an emitter')
+}
+//> Hi! I behave like an emitter.
+```
+
+### Instances
 
 
-## Examples
 
-For now, please see the [tests](https://github.com/lighterio/lighter-emitter/blob/master/test/type.js).
+### emitter.extend(map)
+
+Define and return a sub type of the `Type` object, with a prototype decorated
+with a `map` of additional properties. Additionally, the sub type itself gets
+the same properties as its super type (such as the `extend` method).
+
+When the `map` includes a property called `init`, it is used as the constructor
+for the sub type rather than being added as a prototype property.
+
+```javascript
 
 
 ## Acknowledgements
@@ -35,57 +98,3 @@ promote, enhance, document, patch, and submit comments & issues -
 Additionally, huge thanks go to [eBay](http://www.ebay.com) for employing
 and supporting [`lighter-emitter`](http://lighter.io/lighter-emitter) project
 maintainers, and for being an epically awesome place to work (and play).
-
-
-## How to Contribute
-
-We welcome contributions from the community and are happy to have them.
-Please follow this guide when logging issues or making code changes.
-
-### Logging Issues
-
-All issues should be created using the
-[new issue form](https://github.com/lighterio/lighter-emitter/issues/new).
-Please describe the issue including steps to reproduce. Also, make sure
-to indicate the version that has the issue.
-
-### Changing Code
-
-Code changes are welcome and encouraged! Please follow our process:
-
-1. Fork the repository on GitHub.
-2. Fix the issue ensuring that your code follows the
-   [style guide](http://lighter.io/style-guide).
-3. Add tests for your new code, ensuring that you have 100% code coverage.
-   (If necessary, we can help you reach 100% prior to merging.)
-   * Run `npm test` to run tests quickly, without testing coverage.
-   * Run `npm run cover` to test coverage and generate a report.
-   * Run `npm run report` to open the coverage report you generated.
-4. [Pull requests](http://help.github.com/send-pull-requests/) should be made
-   to the [master branch](https://github.com/lighterio/lighter-emitter/tree/master).
-
-### Contributor Code of Conduct
-
-As contributors and maintainers of `lighter-emitter`, we pledge to respect all
-people who contribute through reporting issues, posting feature requests,
-updating documentation, submitting pull requests or patches, and other
-activities.
-
-If any participant in this project has issues or takes exception with a
-contribution, they are obligated to provide constructive feedback and never
-resort to personal attacks, trolling, public or private harassment, insults, or
-other unprofessional conduct.
-
-Project maintainers have the right and responsibility to remove, edit, or
-reject comments, commits, code, edits, issues, and other contributions
-that are not aligned with this Code of Conduct. Project maintainers who do
-not follow the Code of Conduct may be removed from the project team.
-
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by opening an issue or contacting one or more of the project
-maintainers.
-
-We promise to extend courtesy and respect to everyone involved in this project
-regardless of gender, gender identity, sexual orientation, ability or
-disability, ethnicity, religion, age, location, native language, or level of
-experience.
