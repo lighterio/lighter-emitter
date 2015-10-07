@@ -4,7 +4,7 @@
 [![Downloads](https://img.shields.io/npm/dm/lighter-emitter.svg)](//www.npmjs.com/package/lighter-emitter)
 [![Build](https://img.shields.io/travis/lighterio/lighter-emitter.svg)](//travis-ci.org/lighterio/lighter-emitter)
 [![Coverage](https://img.shields.io/coveralls/lighterio/lighter-emitter/master.svg)](//coveralls.io/r/lighterio/lighter-emitter)
-[![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](//github.com/feross/standard)
+[![Style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](//www.npmjs.com/package/standard)
 
 The `lighter-emitter` module is a lightweight event emitter with
 better performance than Node's builtin EventEmitter.
@@ -24,58 +24,73 @@ A typical Node application instantiates several EventEmitter objects
 for every request, so EventEmitter performance is closely tied to
 application performance. Node's builtin EventEmitter is very fast, but
 `lighter-emitter` is slightly faster, according to
-[our benchmarks](//github.com/lighterio/lighter-emitter/master/test/bench/emitter-bench.js):
+[our benchmarks](//github.com/lighterio/lighter-emitter/master/test/):
 
 <img src="https://raw.githubusercontent.com/lighterio/lighter-emitter/master/test/bench/run.png" width="450" height="290">
+
+### Differences from EventEmitter
+
+Node's builtin EventEmitter is already highly optimized, so in order to build
+a faster Emitter, some features were left out.
+
+Emitter **does not** have:
+* Automatic "newListener" and "removeListener" emitting.
+* Domain support.
+* A builtin "error" listener.
+* A default of 10 for `_maxListeners`.
 
 
 ## API
 
-### Type
+### [Type](//www.npmjs.com/package/lighter-type)
 
-The `lighter-emitter` module exports a
+The `lighter-emitter` module exports a constructor that extends from
 [`lighter-type`](//www.npmjs.com/package/lighter-type) Type which can
 instantiate new Emitter objects or decorate existing objects with Emitter
 prototype methods.
 
-#### Constructor
+### Emitter
 
 A new emitter object can be constructed simply with the `new` keyword.
 
-```javascript
+```js
 var Emitter = require('lighter-emitter')
 
 // Create a brand new Emitter object.
 var emitter = new Emitter()
 ```
 
-#### Emitter.decorate(object, properties)
+### Emitter.init(object)
 
-A plain JavaScript object effectively becomes an emitter if you decorate
-it with the Emitter prototype. However, it does not become an instance of
-Emitter.
+Alternatively, a plain JavaScript object can be made into an emitter
+by running the `init` method on it, thereby decorating it with
+`Emitter.prototype` methods, and executing the Emiter constructor on
+it. However, it does not become an instance of Emitter.
 
-```javascript
+```js
 var Emitter = require('lighter-emitter')
 
+var emitter = new Emitter()
 var object = {}
-Emitter.decorate(object, Emitter.prototype)
+Emitter.init(object)
 
-object.on('hi', function (message) {
-  console.log('Hi! ' + message + '.')
-})
-
-if (object instanceof Emitter) {
-  object.emit('hi', 'I am an emitter')
-} else {
-  object.emit('hi', 'I behave like an emitter')
+function hi (me) {
+  me.on('hi', function (message) {
+    console.log('Hi! ' + message + '.')
+  })
+  if (me instanceof Emitter) {
+    me.emit('hi', 'I\'m an emitter')
+  } else {
+    me.emit('hi', 'I behave like an emitter')
+  }
 }
+
+hi(emitter)
+//> Hi! I'm an emitter.
+
+hi(object)
 //> Hi! I behave like an emitter.
 ```
-
-### Instances
-
-
 
 ### emitter.extend(map)
 
@@ -86,15 +101,136 @@ the same properties as its super type (such as the `extend` method).
 When the `map` includes a property called `init`, it is used as the constructor
 for the sub type rather than being added as a prototype property.
 
-```javascript
+```js
+var Emitter = require('lighter-emitter')
+
+var BoomEmitter = Emitter.extend({
+
+  emit: function (type) {
+    this._super.emit.apply(this, arguments)
+    console.log('Boom!')
+  }
+
+})
+
+var boomer = new BoomEmitter()
+boomer.on('hi', function () {
+  console.log('Hi!')
+})
+boomer.emit('hi')
+
+//> Hi!
+//> Boom!
+```
+
+### emitter.addListener(event, listener) <small>or</small> emitter.on(event, listener)
+Adds a listener to the end of the listeners array for the specified `event`.
+No checks are made to see if the `listener` has already been added. Multiple
+calls passing the same combination of `event` and `listener` will result in the
+`listener` being added multiple times.
+
+```js
+server.on('connection', function (stream) {
+  console.log('someone connected!')
+})
+```
+
+Returns emitter, so calls can be chained.
+
+### emitter.once(event, listener)
+Adds a **one time** listener for the event. This listener is
+invoked only the next time the event is fired, after which
+it is removed.
+
+```js
+server.once('connection', function (stream) {
+  console.log('Ah, we have our first user!')
+})
+```
+
+Returns emitter, so calls can be chained.
+
+### emitter.removeListener(event, listener) <small>or</small> emitter.off(event, listener)
+Removes a listener from the listener array for the specified event.
+**Caution**: changes array indices in the listener array behind the listener.
+
+```js
+var callback = function(stream) {
+  console.log('someone connected!')
+}
+server.on('connection', callback)
+// ...
+server.removeListener('connection', callback)
+```
+
+`removeListener` will remove, at most, one instance of a listener from the
+listener array. If any single listener has been added multiple times to the
+listener array for the specified `event`, then `removeListener` must be called
+multiple times to remove each instance.
+
+Returns emitter, so calls can be chained.
+
+### emitter.removeAllListeners([event])
+Removes all listeners, or those of the specified event. Its not a good idea to
+remove listeners that were added elsewhere in the code, especially when its on
+an emitter that you didnt create (e.g. sockets or file streams).
+
+Returns emitter, so calls can be chained.
+
+### emitter.setMaxListeners(n)
+By default EventEmitters will print a warning if more than 10 listeners are
+added for a particular event. This is a useful default which helps finding
+memory leaks. Obviously not all Emitters should be limited to 10. This function
+allows that to be increased. Set to zero for unlimited.
+
+Returns emitter, so calls can be chained.
+
+### emitter.getMaxListeners()
+Returns the current max listener value for the emitter which is either set by
+`emitter.setMaxListeners(n)` or defaults to `EventEmitter.defaultMaxListeners`.
+
+This can be useful to increment/decrement max listeners to avoid the warning
+while not being irresponsible and setting a too big number.
+
+```js
+emitter.setMaxListeners(emitter.getMaxListeners() + 1)
+emitter.once('event', function () {
+  // do stuff
+  emitter.setMaxListeners(Math.max(emitter.getMaxListeners() - 1, 0))
+})
+```
+
+### Emitter.defaultMaxListeners
+`emitter.setMaxListeners(n)` sets the maximum on a per-instance basis.
+This class property lets you set it for *all* Emitter instances,
+current and future, effective immediately. Use with care.
+
+Note that `emitter.setMaxListeners(n)` still has precedence over
+`Emitter.defaultMaxListeners`.
+
+### emitter.listeners(event)
+Returns a copy of the array of listeners for the specified event.
+
+```js
+server.on('connection', function (stream) {
+  console.log('someone connected!')
+})
+console.log(util.inspect(server.listeners(connection)))
+//> [ [Function] ]
+```
+
+### emitter.emit(event[, arg1][, arg2][, ...])
+Calls each of the listeners in order with the supplied arguments.
+
+Returns `true` if event had listeners, `false` otherwise.
 
 
-## Acknowledgements
+### emitter.listenerCount(event)
+Returns the number of listeners listening to the `event` of event.
 
-We would like to thank all of the amazing people who use, support,
-promote, enhance, document, patch, and submit comments & issues -
-`lighter-emitter` couldn't exist without you.
 
-Additionally, huge thanks go to [eBay](http://www.ebay.com) for employing
-and supporting [`lighter-emitter`](http://lighter.io/lighter-emitter) project
-maintainers, and for being an epically awesome place to work (and play).
+## More on lighter-emitter...
+* [Contributing](//github.com/lighterio/lighter-emitter/blob/master/CONTRIBUTING.md)
+* [License (ISC)](//github.com/lighterio/lighter-emitter/blob/master/LICENSE.md)
+* [Change Log](//github.com/lighterio/lighter-emitter/blob/master/CHANGELOG.md)
+* [Roadmap](//github.com/lighterio/lighter-emitter/blob/master/ROADMAP.md)

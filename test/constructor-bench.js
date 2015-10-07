@@ -1,6 +1,6 @@
 var libs = require('./bench-util').libs
 
-bench('Emitter.init', function () {
+bench('Emitter constructor', function () {
   this.benchTime = this.root.options.benchTime * 2
   Object.keys(libs).forEach(function (name) {
     var Emitter = libs[name]

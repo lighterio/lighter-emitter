@@ -10,8 +10,7 @@ var Emitter = module.exports = Type.extend({
    */
   init: function init () {
     this._events = {}
-    this._flags = {}
-    this._maxListeners = defaultMaxListeners
+    this._maxListeners = Emitter.defaultMaxListeners
   },
 
   /**
@@ -37,7 +36,7 @@ var Emitter = module.exports = Type.extend({
   addListener: function addListener (type, fn) {
     var events = this._events
     var fns = events[type]
-    if (typeof fns === 'undefined') {
+    if (isUndefined(fns)) {
       events[type] = fn
     } else if (typeof fns !== 'object') {
       if (this._maxListeners > 1) {
@@ -73,7 +72,7 @@ var Emitter = module.exports = Type.extend({
    */
   listeners: function listeners (type) {
     var fns = this._events[type]
-    return typeof fns === 'undefined' ? [] : typeof fns === 'object' ? fns : [fns]
+    return (typeof fns !== 'undefined') ? (typeof fns !== 'object' ? [fns] : fns) : []
   },
 
   /**
@@ -81,7 +80,7 @@ var Emitter = module.exports = Type.extend({
    */
   listenerCount: function listenerCount (type) {
     var fns = this._events[type]
-    return typeof fns === 'undefined' ? 0 : typeof fns === 'object' ? fns.length : 1
+    return (typeof fns !== 'undefined') ? (typeof fns !== 'object' ? 1 : fns.length) : 0
   },
 
   /**
@@ -125,40 +124,38 @@ var Emitter = module.exports = Type.extend({
   /**
    * Set one listener for a type of event (replacing any others).
    */
-  setListener: function one (type, fn) {
+  one: function one (type, fn) {
     this._events[type] = fn
     return this
   },
 
   emit: function emit (type) {
-    var fns = this._events[type]
-    var i = 0
-    var l = 0
-    var a = null
-    var n = typeof fns === 'function'
+    var fns = this._events[type], isFn, i, l, a
     if (typeof fns === 'undefined') return false
+    var isFn = typeof fns !== 'object'
     switch (arguments.length) {
       case 1:
-        if (n) fns.call(this)
-        else for (l = fns.length; i < l; i++) fns[i].call(this)
+        if (isFn) fns.call(this)
+        else for (i = 0, l = fns.length; i < l; i++) fns[i].call(this)
         break
       case 2:
-        if (n) fns.call(this, arguments[1])
-        else for (l = fns.length; i < l; i++) fns[i].call(this, arguments[1])
+        if (isFn) fns.call(this, arguments[1])
+        else for (i = 0, l = fns.length; i < l; i++) fns[i].call(this, arguments[1])
         break
       case 3:
-        if (n) fns.call(this, arguments[1], arguments[2])
-        else for (l = fns.length; i < l; i++) fns[i].call(this, arguments[1], arguments[2])
+        if (isFn) fns.call(this, arguments[1], arguments[2])
+        else for (i = 0, l = fns.length; i < l; i++) fns[i].call(this, arguments[1], arguments[2])
         break
       case 4:
-        if (n) fns.call(this, arguments[1], arguments[2], arguments[3])
-        else for (l = fns.length; i < l; i++) fns[i].call(this, arguments[1], arguments[2], arguments[3])
+        if (isFn) fns.call(this, arguments[1], arguments[2], arguments[3])
+        else for (i = 0, l = fns.length; i < l; i++) fns[i].call(this, arguments[1], arguments[2], arguments[3])
         break
       default:
+        i = 0
         l = arguments.length - 1
         a = new Array(l)
         while (i < l) a[i] = arguments[++i]
-        if (n) fns.apply(this, a)
+        if (isFn) fns.apply(this, a)
         else for (i = 0, l = fns.length; i < l; i++) fns[i].apply(this, a)
     }
     return false
@@ -178,10 +175,14 @@ Object.defineProperty(Emitter, 'defaultMaxListeners', {
   configurable: true
 })
 
+Emitter.usingDomains = false
+Emitter.listenerFnError = new Error('Listener must be a function')
+
 var proto = Emitter.prototype
 proto.on = proto.addListener
 proto.off = proto.removeListener
-proto.one = proto.setListener
-proto.all = proto.listeners
-proto.count = proto.listenerCount
-proto.clear = proto.removeAllListeners
+proto.stop = proto.removeAllListeners
+
+function isUndefined (v) {
+  return typeof v === 'undefined'
+}

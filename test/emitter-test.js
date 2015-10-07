@@ -1,9 +1,9 @@
-var Emitter = require('../lighter-emitter').setMaxArguments(1)
+/* global describe it */
+var Emitter = require('../lighter-emitter')
 var is = global.is || require('exam/lib/is')
 var no = function () {}
 
 describe('Emitter', function () {
-
   it('has all expected methods', function () {
     var o = {}
     Emitter.init(o)
@@ -16,7 +16,6 @@ describe('Emitter', function () {
   })
 
   describe('.prototype.on', function () {
-
     it('adds a listener', function (done) {
       var o = new Emitter()
       o.on('e', done)
@@ -25,8 +24,8 @@ describe('Emitter', function () {
 
     it('adds two listeners', function () {
       var o = new Emitter()
-      var f = function (d) { o.c += 'f' + d; }
-      var g = function (d) { o.c += 'g' + d; }
+      var f = function (d) { o.c += 'f' + d }
+      var g = function (d) { o.c += 'g' + d }
       o.c = ''
       o.on('e', f)
       o.on('e', g)
@@ -37,40 +36,35 @@ describe('Emitter', function () {
     it('adds three listeners', function () {
       var o = {c: ''}
       Emitter.init(o)
-      var f = function (d) { o.c += 'f' + d; }
-      var g = function (d) { o.c += 'g' + d; }
-      var h = function (d) { o.c += 'h' + d; }
+      var f = function (d) { o.c += 'f' + d }
+      var g = function (d) { o.c += 'g' + d }
+      var h = function (d) { o.c += 'h' + d }
       o.on('e', f)
       o.on('e', g)
       o.on('e', h)
       o.emit('e')
       is(o.c, 'fundefinedgundefinedhundefined')
     })
-
   })
 
   describe('.prototype.once', function () {
-
     it('only fires once', function () {
       var o = new Emitter()
       o.c = ''
-      var f = function (d) { o.c += 'f' + d; }
+      var f = function (d) { o.c += 'f' + d }
       o.once('e', f)
       o.emit('e', 1)
       is(o.c, 'f1')
       o.emit('e', 2)
       is(o.c, 'f1')
     })
-
   })
 
   describe('.prototype.emit', function () {
-
     it('emits data arguments', function () {
-      Emitter.setMaxArguments(4)
       var o = {c: ''}
       Emitter.init(o)
-      var f = function (a, b, c, d) {
+      var f = function () {
         var a = Array.prototype.slice.call(arguments)
         o.c += '[' + a.join(',') + ']'
       }
@@ -81,18 +75,16 @@ describe('Emitter', function () {
       o.emit('c', 1, 2, 3)
       o.emit('c', 1, 2, 3, 4)
       is(o.c, '[][1][1,2][1,2,3][1,2,3,4]')
-      Emitter.setMaxArguments(1)
     })
 
     it('emits data arguments to multiple listeners', function () {
-      Emitter.setMaxArguments(4)
       var o = {c: '', d: 0}
       Emitter.init(o)
-      var f = function (a, b, c, d) {
+      var f = function () {
         var a = Array.prototype.slice.call(arguments)
         o.c += '[' + a.join(',') + ']'
       }
-      var g = function (a, b, c, d) {
+      var g = function () {
         var a = Array.prototype.slice.call(arguments)
         a.forEach(function (n) {
           if (n) {
@@ -109,11 +101,9 @@ describe('Emitter', function () {
       o.emit('c', 1, 2, 3, 4)
       is(o.c, '[][1][1,2][1,2,3][1,2,3,4]')
       is(o.d, 20)
-      Emitter.setMaxArguments(1)
     })
 
     it('emits data arguments to any number of listeners', function () {
-      Emitter.setMaxArguments(2)
       var o = {n: 0}
       Emitter.init(o)
       var f = function (a, b) {
@@ -129,31 +119,10 @@ describe('Emitter', function () {
       o.removeAllListeners()
       o.emit('c', 2, 3)
       is(o.n, 9)
-      Emitter.setMaxArguments(1)
     })
-
-    it('can ignore arguments beyond a maximum', function () {
-      var o = {n: 0}
-      Emitter.init(o)
-      o.setMaxArguments(1)
-      var f = function (a, b) {
-        o.n += (a + b)
-      }
-      is(o.n, 0)
-      o.on('c', f)
-      o.emit('c', 1, 2)
-      is.nan(o.n)
-      o.emit('c', '1')
-      is(o.n, 'NaN1undefined')
-      o.setMaxArguments(2)
-      o.emit('c', 1, 2)
-      is(o.n, 'NaN1undefined3')
-    })
-
   })
 
   describe('.prototype.listeners', function () {
-
     it('returns an empty array if there are no listeners', function () {
       var o = new Emitter()
       is.same(o.listeners(), [])
@@ -177,11 +146,9 @@ describe('Emitter', function () {
       o.on('a', no)
       is.same(o.listeners('a'), [no, no])
     })
-
   })
 
   describe('.prototype.listenerCount', function () {
-
     it('returns zero if there are no listeners', function () {
       var o = new Emitter()
       is.same(o.listenerCount(), 0)
@@ -205,11 +172,9 @@ describe('Emitter', function () {
       o.on('a', no)
       is.same(o.listenerCount('a'), 2)
     })
-
   })
 
   describe('.prototype.removeListener', function () {
-
     it('removes a listener', function () {
       var o = {n: 0}
       Emitter.init(o)
@@ -241,11 +206,9 @@ describe('Emitter', function () {
       o._events = {a: 1}
       o.removeListener('a', 2)
     })
-
   })
 
   describe('.prototype.removeAllListeners', function () {
-
     it('removes all listeners of a type', function () {
       var o = {n: 0}
       Emitter.init(o)
@@ -292,16 +255,11 @@ describe('Emitter', function () {
     it('is OK having no matching listeners', function () {
       var o = {n: 0}
       Emitter.init(o)
-      var f = function () {
-        this.n += 1
-      }
       o.removeAllListeners('inc')
     })
-
   })
 
   describe('.prototype.once', function () {
-
     it('fires an event once', function () {
       var o = {c: ''}
       Emitter.init(o)
@@ -315,11 +273,9 @@ describe('Emitter', function () {
       o.emit('c', 1, 2)
       is(o.c, '[1]')
     })
-
   })
 
   describe('.defaultMaxListeners', function () {
-
     it('treats 0 as unlimited', function () {
       var original = Emitter.defaultMaxListeners
       Emitter.defaultMaxListeners = 0
@@ -335,7 +291,6 @@ describe('Emitter', function () {
     })
 
     describe('default 10', function () {
-
       it('is returned', function () {
         is(Emitter.defaultMaxListeners, 10)
       })
@@ -352,11 +307,9 @@ describe('Emitter', function () {
         }
       })
     })
-
   })
 
   describe('.prototype.setMaxListeners', function () {
-
     it('treats 0 as unlimited', function () {
       var o = new Emitter()
       o.setMaxListeners(0)
@@ -388,11 +341,9 @@ describe('Emitter', function () {
         done()
       }
     })
-
   })
 
   describe('.prototype.one', function () {
-
     it('sets a listener', function () {
       var o = {n: 0}
       Emitter.init(o)
@@ -404,7 +355,5 @@ describe('Emitter', function () {
       o.emit('a')
       is(o.n, 1)
     })
-
   })
-
 })

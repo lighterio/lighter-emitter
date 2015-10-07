@@ -1,13 +1,9 @@
 var EventEmitter = require('events').EventEmitter
 
-EventEmitter.setMaxArguments = function () {
-  return this
-}
-
 var libs = exports.libs = {
   'events.EventEmitter': EventEmitter,
   'lighter-emitter': require('../lighter-emitter'),
-  //'lighter-emitter-neg': require('../lighter-emitter-neg')
+  //'lighter-emitter2': require('../lighter-emitter2')
 }
 
 exports.emit = function (count, wording) {
@@ -19,7 +15,7 @@ exports.emit = function (count, wording) {
     bench('four arguments', function () {
       this.benchTime = this.parent.benchTime / 3
       Object.keys(libs).forEach(function (name) {
-        var Emitter = libs[name].setMaxArguments(4)
+        var Emitter = libs[name]
         var e = new Emitter()
         var f = function (a, b, c, d) {}
         for (var i = 0; i < count; i++) {
@@ -36,7 +32,7 @@ exports.emit = function (count, wording) {
     bench('three arguments', function () {
       this.benchTime = this.parent.benchTime / 3
       Object.keys(libs).forEach(function (name) {
-        var Emitter = libs[name].setMaxArguments(3)
+        var Emitter = libs[name]
         var e = new Emitter()
         var f = function (a, b, c) {}
         for (var i = 0; i < count; i++) {
@@ -53,7 +49,7 @@ exports.emit = function (count, wording) {
     bench('two arguments', function () {
       this.benchTime = this.parent.benchTime / 3
       Object.keys(libs).forEach(function (name) {
-        var Emitter = libs[name].setMaxArguments(2)
+        var Emitter = libs[name]
         var e = new Emitter()
         var f = function (a, b) {}
         for (var i = 0; i < count; i++) {
@@ -69,7 +65,7 @@ exports.emit = function (count, wording) {
 
     bench('zero arguments', function () {
       Object.keys(libs).forEach(function (name) {
-        var Emitter = libs[name].setMaxArguments(0)
+        var Emitter = libs[name]
         var e = new Emitter()
         var f = function () {}
         for (var i = 0; i < count; i++) {
@@ -83,7 +79,7 @@ exports.emit = function (count, wording) {
 
     bench('one argument', function () {
       Object.keys(libs).forEach(function (name) {
-        var Emitter = libs[name].setMaxArguments(1)
+        var Emitter = libs[name]
         var e = new Emitter()
         var f = function (a) {}
         for (var i = 0; i < count; i++) {
