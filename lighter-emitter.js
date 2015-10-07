@@ -17,7 +17,7 @@ var Emitter = module.exports = Type.extend({
   /**
    * Set the maximum number of listeners that can listen to any type of event.
    *
-   * @param {number} max  A new maximum number of listeners (or 0 == Infinity).
+   * @param  {Number} max  A new maximum number of listeners (or 0 == Infinity).
    */
   setMaxListeners: function setMaxListeners (max) {
     this._maxListeners = max || Infinity
@@ -25,39 +25,36 @@ var Emitter = module.exports = Type.extend({
   },
 
   /**
-   * Handle the case of max listeners being exceeded for an event type.
-   */
-  maxListenersExceeded: function maxListenersExceeded (type) {
-    throw new Error('Max ' + this._maxListeners + ' listeners exceeded for "' + type + '".')
-  },
-
-  /**
    * Bind a function as a listener for a type of event.
+   *
+   * @param  {String}   type  A type of event.
+   * @param  {Function} fn    A listener function.
    */
   addListener: function addListener (type, fn) {
     var events = this._events
     var fns = events[type]
+    var length = 1
     if (typeof fns === 'undefined') {
       events[type] = fn
-    } else if (typeof fns !== 'object') {
-      if (this._maxListeners > 1) {
-        events[type] = [fns, fn]
-      } else {
-        this.maxListenersExceeded(type)
-      }
+      return this
+    }
+    if (typeof fns !== 'object') {
+      fns = events[type] = [fns, fn]
     } else {
-      var length = fns.length
-      if (length < this._maxListeners) {
-        fns[length] = fn
-      } else {
-        this.maxListenersExceeded(type)
-      }
+      length = fns.length
+      fns[length] = fn
+    }
+    if (length >= this._maxListeners) {
+      throw new Error('Exceeded ' + this._maxListeners + ' "' + type + '" listeners.')
     }
     return this
   },
 
   /**
    * Set an event listener to be fired only once.
+   *
+   * @param  {String}   type  A type of event.
+   * @param  {Function} fn    A listener function.
    */
   once: function once (type, fn) {
     function one () {
@@ -70,6 +67,8 @@ var Emitter = module.exports = Type.extend({
 
   /**
    * Return an array of listeners for a type of event.
+   *
+   * @param  {String} type  A type of event.
    */
   listeners: function listeners (type) {
     var fns = this._events[type]
@@ -78,6 +77,8 @@ var Emitter = module.exports = Type.extend({
 
   /**
    * Return the number of listeners for a type of event.
+   *
+   * @param  {String} type  A type of event.
    */
   listenerCount: function listenerCount (type) {
     var fns = this._events[type]
