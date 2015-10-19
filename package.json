@@ -27,7 +27,15 @@
     "minimal",
     "benchmark",
     "speed",
-    "ops"
+    "stream",
+    "ops",
+    "addListener",
+    "removeListener",
+    "removeAllListeners",
+    "setMaxListeners",
+    "getMaxListeners",
+    "defaultMaxListeners",
+    "listenerCount"
   ],
   "main": "lighter-emitter.js",
   "engines": {
