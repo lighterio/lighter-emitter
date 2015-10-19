@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 
+var ons = 0, offs = 0, emits = 0
+
 var args = Array.prototype.slice.call(process.argv, 2)
-var port = args[0]
+var port = args[0] || 8124
 var override = args[1]
 if (override) {
   var Emitter = require('../../lighter-emitter')
@@ -12,7 +14,7 @@ if (override) {
   function emitterize (type) {
     type.init = Emitter
     type.prototype.on = type.prototype.addListener = Emitter.prototype.on
-    type.prototype.off = type.prototype.removeListener = Emitter.prototype.on
+    type.prototype.off = type.prototype.removeListener = Emitter.prototype.off
     type.prototype.emit = Emitter.prototype.emit
   }
   emitterize(EventEmitter)

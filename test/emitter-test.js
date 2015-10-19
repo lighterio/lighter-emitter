@@ -1,18 +1,30 @@
-/* global describe it */
+/* global describe it beforeEach afterEach */
 var Emitter = require('../lighter-emitter')
 var is = global.is || require('exam/lib/is')
+var mock = global.mock || require('exam/lib/mock')
+var unmock = mock.unmock
 var no = function () {}
 
 describe('Emitter', function () {
-  it('has all expected methods', function () {
-    var o = {}
-    Emitter.init(o)
-    is.function(o.on)
-    is.function(o.once)
-    is.function(o.emit)
-    is.function(o.removeListener)
-    is.function(o.removeAllListeners)
-    is.function(o.once)
+  describe('.prototype', function () {
+    it('has shorthand methods', function () {
+      var e = new Emitter()
+      is.function(e.on)
+      is.function(e.off)
+      is.function(e.once)
+      is.function(e.one)
+      is.function(e.emit)
+      is.function(e.clear)
+      is.function(e.count)
+    })
+
+    it('has equivalent long-form methods', function () {
+      var e = new Emitter()
+      is(e.on, e.addListener)
+      is(e.off, e.removeListener)
+      is(e.clear, e.removeAllListeners)
+      is(e.count, e.listenerCount)
+    })
   })
 
   describe('.prototype.on', function () {
@@ -61,6 +73,26 @@ describe('Emitter', function () {
   })
 
   describe('.prototype.emit', function () {
+    it('returns true when there are listeners', function () {
+      var e = new Emitter()
+      var b = false
+      e.on('a', no)
+      b = e.emit('a')
+      is(b, true)
+      e.on('a', no)
+      b = e.emit('a')
+      is(b, true)
+      e.on('a', no)
+      b = e.emit('a')
+      is(b, true)
+    })
+
+    it('returns false when there are no listeners', function () {
+      var e = new Emitter()
+      var b = e.emit('a')
+      is(b, false)
+    })
+
     it('emits data arguments', function () {
       var o = {c: ''}
       Emitter.init(o)
@@ -99,8 +131,9 @@ describe('Emitter', function () {
       o.emit('c', 1, 2)
       o.emit('c', 1, 2, 3)
       o.emit('c', 1, 2, 3, 4)
-      is(o.c, '[][1][1,2][1,2,3][1,2,3,4]')
-      is(o.d, 20)
+      o.emit('c', 1, 2, 3, 4, 5)
+      is(o.c, '[][1][1,2][1,2,3][1,2,3,4][1,2,3,4,5]')
+      is(o.d, 35)
     })
 
     it('emits data arguments to any number of listeners', function () {
@@ -295,21 +328,26 @@ describe('Emitter', function () {
         is(Emitter.defaultMaxListeners, 10)
       })
 
-      it('is inherited by instances', function (done) {
+      it('is inherited by instances', function () {
+        mockConsole()
         var o = new Emitter()
         for (var i = 0; i < 10; i++) {
           o.on('a', no)
         }
-        try {
-          o.on('a', no)
-        } catch (e) {
-          done()
-        }
+        is(console.error.value, 0)
+        is(console.trace.value, 0)
+        o.on('a', no)
+        is(console.error.value, 1)
+        is(console.trace.value, 1)
+        unmockConsole()
       })
     })
   })
 
   describe('.prototype.setMaxListeners', function () {
+    beforeEach(mockConsole)
+    afterEach(unmockConsole)
+
     it('treats 0 as unlimited', function () {
       var o = new Emitter()
       o.setMaxListeners(0)
@@ -319,27 +357,61 @@ describe('Emitter', function () {
       }
     })
 
-    it('works with 1', function (done) {
+    it('works with 1', function () {
       var o = new Emitter()
       o.setMaxListeners(1)
       o.on('a', no)
-      try {
-        o.on('a', no)
-      } catch (e) {
-        done()
-      }
+      o.on('a', no)
+      is(console.error.value, 1)
+      is(console.trace.value, 1)
     })
 
-    it('works with > 1', function (done) {
+    it('works with > 1', function () {
       var o = new Emitter()
       o.setMaxListeners(2)
       o.on('a', no)
       o.on('a', no)
-      try {
-        o.on('a', no)
-      } catch (e) {
-        done()
-      }
+      o.on('a', no)
+      is(console.error.value, 1)
+      is(console.trace.value, 1)
+    })
+
+    it('does not re-warn', function () {
+      var o = new Emitter()
+      o.setMaxListeners(2)
+      o.on('a', no)
+      o.on('a', no)
+      o.on('a', no)
+      o.on('a', no)
+      is(console.error.value, 1)
+      is(console.trace.value, 1)
+    })
+  })
+
+  describe('.prototype.getMaxListeners', function () {
+    it('gets the default', function () {
+      Emitter.defaultMaxListeners = 10
+      var o = new Emitter()
+      var m = o.getMaxListeners()
+      is(m, 10)
+    })
+
+    it('gets a new setting', function () {
+      var o = new Emitter()
+      o.setMaxListeners(20)
+      var m = o.getMaxListeners()
+      is(m, 20)
+    })
+
+    it('gets a new default', function () {
+      Emitter.defaultMaxListeners = 5
+      var o = new Emitter()
+      var m = o.getMaxListeners()
+      is(m, 5)
+      Emitter.defaultMaxListeners = 10
+      o = new Emitter()
+      m = o.getMaxListeners()
+      is(m, 10)
     })
   })
 
@@ -357,3 +429,14 @@ describe('Emitter', function () {
     })
   })
 })
+
+function mockConsole () {
+  mock(console, {
+    error: mock.count(),
+    trace: mock.count()
+  })
+}
+
+function unmockConsole () {
+  unmock(console)
+}

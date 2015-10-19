@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "A lightweight JavaScript event emitter.",
   "dependencies": {
-    "lighter-type": ">=1.1.0"
+    "lighter-type": "^1.2.0"
   },
   "devDependencies": {
-    "exam": ">=0.3.8"
+    "exam": "^1.1.0"
   },
   "bundledDependencies": [
     "lighter-type"
@@ -38,7 +38,7 @@
     "cover": "./node_modules/exam/exam-cover.js",
     "report": "open coverage/lcov-report/index.html",
     "coveralls": "./node_modules/exam/exam-coveralls.js",
-    "bench": "./node_modules/exam/exam.js test/bench"
+    "bench": "./node_modules/exam/exam.js -mg bench -B"
   },
   "repository": "https://github.com/lighterio/lighter-emitter.git",
   "bugs": "https://github.com/lighterio/lighter-emitter/issues",
