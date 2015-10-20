@@ -31,7 +31,7 @@ Emitter **does not**:
 
 ## API
 
-### [Type](//www.npmjs.com/package/lighter-type)
+### Type
 The `lighter-emitter` module exports a constructor that extends the Type
 constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type). When
 a Type (such as **Emitter**) is uppercased in documentation, it refers to the
