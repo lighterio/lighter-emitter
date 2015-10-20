@@ -32,11 +32,11 @@ Emitter **does not**:
 ## API
 
 ### [Type](//www.npmjs.com/package/lighter-type)
-
-The `lighter-emitter` module exports a constructor that extends from
-[`lighter-type`](//www.npmjs.com/package/lighter-type) Type which can
-instantiate new Emitter objects or decorate existing objects with Emitter
-prototype methods.
+The `lighter-emitter` module exports a constructor that extends the Type
+constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type). When
+a Type (such as **Emitter**) is uppercased in documentation, it refers to the
+constructor or its constructor properties. And when a type is lowercased (such
+as **emitter**), it refers to an instance and its prototype properties.
 
 ### Emitter
 
@@ -53,7 +53,7 @@ var emitter = new Emitter()
 
 Alternatively, a plain JavaScript object can be made into an emitter
 by running the `init` method on it, thereby decorating it with
-`Emitter.prototype` methods, and executing the Emiter constructor on
+`Emitter.prototype` methods, and executing the Emitter constructor on
 it. However, it does not become an instance of Emitter.
 
 ```js
