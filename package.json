@@ -1,9 +1,9 @@
 {
   "name": "lighter-emitter",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A lightweight JavaScript event emitter.",
   "dependencies": {
-    "lighter-type": ">=1.2.1 <2"
+    "lighter-type": ">=2.0.0 <3"
   },
   "devDependencies": {
     "exam": ">=1.2.0 <2"
