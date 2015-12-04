@@ -31,12 +31,8 @@ Emitter **does not**:
 
 ## API
 
-### Type
-The `lighter-emitter` module exports a constructor that extends the Type
-constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type). When
-a Type (such as **Emitter**) is uppercased in documentation, it refers to the
-constructor or its constructor properties. And when a type is lowercased (such
-as **emitter**), it refers to an instance and its prototype properties.
+The `lighter-emitter` package exports a constructor that extends the Type
+constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type).
 
 ### Emitter
 
@@ -81,7 +77,7 @@ hi(object)
 //> Hi! I behave like an emitter.
 ```
 
-### emitter.extend(map)
+### Emitter.prototype.extend(map)
 
 Define and return a sub type of the `Emitter` object, with a prototype decorated
 with a `map` of additional properties. Additionally, the sub type itself gets
