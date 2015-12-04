@@ -51,7 +51,7 @@ var emitter = new Emitter()
 ```
 
 ### Emitter.init(object[, overwrite][, args])
-*See [Type.init](https://github.com/lighterio/lighter-type#typeinitobject-overwrite-args).*
+*See [Type.init](https://github.com/lighterio/lighter-type#Type.init).*
 
 A plain JavaScript object can be made into an emitter
 by running the `init` method on it, thereby decorating it with
@@ -84,7 +84,7 @@ hi(object)
 ```
 
 ### Emitter.extend(map)
-*See [Type.extend](https://github.com/lighterio/lighter-type#typeextendprototypeprops-constructorprops).*
+*See [Type.extend](https://github.com/lighterio/lighter-type#Type.extend).*
 
 Define and return a sub type of the `Emitter` object, with a prototype decorated
 with a `map` of additional properties. Additionally, the sub type itself gets
@@ -117,23 +117,23 @@ boomer.emit('hi')
 
 ### Emitter.decorate(object[, map][, overwrite])
 Decorate an `object` with a `map` of additional properties.
-*See (Type.decorate)[https://github.com/lighterio/lighter-type#typedecorateobject-map-overwrite].*
+*See (Type.decorate)[https://github.com/lighterio/lighter-type#Type.decorate].*
 
 ### Emitter.include(type[, overwrite])
 Implement multiple inheritance by decorating a Emitter's prototype.
-*See (Type.include)[https://github.com/lighterio/lighter-type#typeincludetype-overwrite].*
+*See (Type.include)[https://github.com/lighterio/lighter-type#Type.include].*
 
 ### Emitter.is(type)
 Check whether this Emitter is descended from another type.
-*See (Type.is)[https://github.com/lighterio/lighter-type#typeistype].*
+*See (Type.is)[https://github.com/lighterio/lighter-type#Type.is].*
 
 ### Emitter.has(type)
 Check whether this Emitter has acquired the functionality of another type.
-*See (Type.has)[https://github.com/lighterio/lighter-type#typehastype].*
+*See (Type.has)[https://github.com/lighterio/lighter-type#Type.has].*
 
 ### Emitter.hide(object, key, value)
 Create a non-enumerable object property.
-*See (Type.hide)[https://github.com/lighterio/lighter-type#typehideobject-key-value].*
+*See (Type.hide)[https://github.com/lighterio/lighter-type#Type.hide].*
 
 ### Emitter.prototype.on(event, listener) <small>or</small> Emitter.prototype.addListener(event, listener)
 Adds a listener to the end of the listeners array for the specified `event`.
