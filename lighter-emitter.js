@@ -4,15 +4,10 @@
  * Emitter is a lightweight alternative to Node's events.EventEmitter object.
  */
 var Type = require('lighter-type')
-var Emitter = module.exports = Type.extend({
-
-  /**
-   * Set empty events.
-   */
-  init: function init () {
-    this._events = {}
-    this._maxListeners = defaultMaxListeners
-  },
+var Emitter = module.exports = Type.extend(function Emitter () {
+  this._events = {}
+  this._maxListeners = defaultMaxListeners
+}, {
 
   /**
    * Set the maximum number of listeners that can listen to any type of event.

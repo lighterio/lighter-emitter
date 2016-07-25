@@ -1,7 +1,7 @@
 /* global describe it beforeEach afterEach */
 var Emitter = require('../lighter-emitter')
-var is = global.is || require('exam/lib/is')
-var mock = global.mock || require('exam/lib/mock')
+var is = global.is || require('exam-is')
+var mock = global.mock || require('exam-mock')
 var unmock = mock.unmock
 var no = function () {}
 

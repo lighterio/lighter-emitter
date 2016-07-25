@@ -1,7 +1,7 @@
 /* global describe it before after */
 var no = function () {}
 var bench = global.bench || no
-var mock = global.mock || require('exam/lib/is')
+var mock = global.mock || require('exam-is')
 var unmock = mock.unmock
 var libs = require('./bench-util').libs
 

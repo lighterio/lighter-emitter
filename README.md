@@ -21,10 +21,10 @@ The `lighter-emitter` package exports a constructor that extends the Type
 constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type).
 
 - [Emitter](#emitter)
-  - [.init(object[, overwrite][, args])](#emitterinitobject-overwrite-args)
-  - [.extend(map)](#emitterextendmap)
-  - [.decorate(object[, map][, overwrite])](#emitterdecorateobject-map-overwrite)
-  - [.include(type[, overwrite])](#emitterincludetype-overwrite)
+  - [.init(object, [overwrite], [args])](#emitterinitobject-overwrite-args)
+  - [.extend([constructor], [prototypeProperties], [constructorProperties])](#emitterextendmap)
+  - [.decorate(object, [map], [overwrite])](#emitterdecorateobject-map-overwrite)
+  - [.include(type, [overwrite])](#emitterincludetype-overwrite)
   - [.is(type)](#emitteristype)
   - [.has(type)](#emitterhastype)
   - [.hide(object, key, value)](#emitterhideobject-key-value)
@@ -37,7 +37,7 @@ constructor from [`lighter-type`](//www.npmjs.com/package/lighter-type).
     - [.setMaxListeners(n)](#emitterprototypesetmaxlistenersn)
     - [.getMaxListeners()](#emitterprototypegetmaxlisteners)
     - [.all(event) <small>or</small> .listeners(event)](#emitterprototypeallevent-smallorsmall-emitterprototypelistenersevent)
-    - [.emit(event[, arg1][, arg2][, ...])](#emitterprototypeemitevent-arg1-arg2-)
+    - [.emit(event, [arg1], [arg2], [...])](#emitterprototypeemitevent-arg1-arg2-)
     - [.count(event) <small>or</small> .listenerCount(event)](#emitterprototypecountevent-smallorsmall-emitterprototypelistenercountevent)
 
 ### Emitter
@@ -50,7 +50,7 @@ var Emitter = require('lighter-emitter')
 var emitter = new Emitter()
 ```
 
-### Emitter.init(object[, overwrite][, args])
+### Emitter.init(object, [overwrite], [args])
 *See [Type.init](https://github.com/lighterio/lighter-type#Type.init).*
 
 A plain JavaScript object can be made into an emitter
@@ -83,15 +83,12 @@ hi(object)
 //> Hi! I behave like an emitter.
 ```
 
-### Emitter.extend(map)
+### Emitter.extend([constructor], [prototypeProperties], [constructorProperties])
 *See [Type.extend](https://github.com/lighterio/lighter-type#Type.extend).*
 
-Define and return a sub type of the `Emitter` object, with a prototype decorated
-with a `map` of additional properties. Additionally, the sub type itself gets
-the same properties as its super type (such as the `extend` method).
-
-When the `map` includes a property called `init`, it is used as the constructor
-for the sub type rather than being added as a prototype property.
+Define and return a sub type of the `Emitter` object, with its prototype and
+constructor optionally decorated with properties (beyond what the sub type
+inherits from its super type).
 
 ```js
 var Emitter = require('lighter-emitter')
@@ -115,11 +112,11 @@ boomer.emit('hi')
 //> Boom!
 ```
 
-### Emitter.decorate(object[, map][, overwrite])
+### Emitter.decorate(object, [map], [overwrite])
 Decorate an `object` with a `map` of additional properties.
 *See (Type.decorate)[https://github.com/lighterio/lighter-type#Type.decorate].*
 
-### Emitter.include(type[, overwrite])
+### Emitter.include(type, [overwrite])
 Implement multiple inheritance by decorating a Emitter's prototype.
 *See (Type.include)[https://github.com/lighterio/lighter-type#Type.include].*
 
@@ -231,7 +228,7 @@ console.log(util.inspect(server.listeners(connection)))
 //> [ [Function] ]
 ```
 
-### Emitter.prototype.emit(event[, arg1][, arg2][, ...])
+### Emitter.prototype.emit(event, [arg1], [arg2], [...])
 Calls each of the listeners in order with the supplied arguments.
 
 Returns `true` if event had listeners, `false` otherwise.
