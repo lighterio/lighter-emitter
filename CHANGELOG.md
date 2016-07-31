@@ -1,5 +1,8 @@
 # lighter-emitter Change Log
 
+## v1.2.1 - 2016-07-31
+* `patch` Unbundled dependencies.
+
 ## v1.2.0 - 2016-07-31
 * `minor` Updating lighter-type to 2.2.0 for new .extend constructor argument.
 
